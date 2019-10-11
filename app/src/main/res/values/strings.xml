@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Converter</string>
+    <string name="from">Из</string>
+    <string name="to">В</string>
+    <string name="unsupported_unit">Unsupported unit: </string>
+
+    <string-array name="length">
+        <item>Миллиметр</item>
+        <item>Сантиметр</item>
+        <item>Метр</item>
+        <item>Километр</item>
+    </string-array>
+
+    <string-array name="mass">
+        <item>Миллиграмм</item>
+        <item>Грамм</item>
+        <item>Килограмм</item>
+        <item>Тонна</item>
+    </string-array>
+
+    <string-array name="temperature">
+        <item>Кельвин</item>
+        <item>Цельсий</item>
+        <item>Фаренгейт</item>
+    </string-array>
+
+    <string-array name="volume">
+        <item>Литр</item>
+        <item>Кубический метр</item>
+        <item>Баррель</item>
+        <item>Пинта</item>
+    </string-array>
+</resources>
