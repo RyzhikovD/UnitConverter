@@ -12,12 +12,12 @@ import java.util.List;
 
 public class ConverterAdapter extends RecyclerView.Adapter<ConverterAdapter.UnitHolder> {
 
-    private List<String> mUnits;
+    private List<Unit> mUnits;
     private OnItemClickListener mClickListener;
 
-    public ConverterAdapter(List<String> mUnits, OnItemClickListener clickListener) {
-        this.mUnits = mUnits;
-        this.mClickListener = clickListener;
+    public ConverterAdapter(List<Unit> units, OnItemClickListener clickListener) {
+        mUnits = units;
+        mClickListener = clickListener;
     }
 
     @NonNull
@@ -29,8 +29,8 @@ public class ConverterAdapter extends RecyclerView.Adapter<ConverterAdapter.Unit
 
     @Override
     public void onBindViewHolder(@NonNull UnitHolder holder, int position) {
-        String unitName = mUnits.get(position);
-        holder.bindView(unitName);
+        Unit unit = mUnits.get(position);
+        holder.bindView(unit);
     }
 
     @Override
@@ -39,23 +39,23 @@ public class ConverterAdapter extends RecyclerView.Adapter<ConverterAdapter.Unit
     }
 
     public static class UnitHolder extends RecyclerView.ViewHolder {
-        private final TextView mUnitName;
-        private String unitString;
+        private final TextView mUnitNameView;
+        private Unit mUnit;
 
         private UnitHolder(@NonNull View itemView, final OnItemClickListener clickListener) {
             super(itemView);
-            mUnitName = itemView.findViewById(R.id.unit_name);
+            mUnitNameView = itemView.findViewById(R.id.unit_name);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    clickListener.onClick(unitString);
+                    clickListener.onClick(mUnit);
                 }
             });
         }
 
-        private void bindView(final String unitName) {
-            mUnitName.setText(unitName);
-            unitString = unitName;
+        private void bindView(final Unit unit) {
+            mUnit = unit;
+            mUnitNameView.setText(mUnit.getUnitName());
         }
     }
 }

@@ -16,6 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:inputType="numberDecimal"
             tools:text="10.0" />
 
         <EditText
@@ -23,6 +24,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:inputType="numberDecimal"
             tools:text="10.0" />
 
     </LinearLayout>

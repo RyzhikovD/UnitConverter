@@ -1,7 +1,5 @@
 package ru.sberbankmobile.converter;
 
-import androidx.annotation.NonNull;
-
 public enum Unit {
 
     LENGTH("Длина"),
@@ -11,7 +9,7 @@ public enum Unit {
 
     private final String mUnitName;
 
-    Unit(@NonNull String unitName) {
+    Unit(String unitName) {
         this.mUnitName = unitName;
     }
 
