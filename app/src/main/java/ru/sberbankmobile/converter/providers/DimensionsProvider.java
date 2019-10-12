@@ -1,9 +1,12 @@
-package ru.sberbankmobile.converter;
+package ru.sberbankmobile.converter.providers;
 
 import android.content.res.Resources;
 
 import java.util.Arrays;
 import java.util.List;
+
+import ru.sberbankmobile.converter.R;
+import ru.sberbankmobile.converter.units.Unit;
 
 public class DimensionsProvider {
 

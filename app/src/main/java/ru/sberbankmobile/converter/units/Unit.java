@@ -1,4 +1,4 @@
-package ru.sberbankmobile.converter;
+package ru.sberbankmobile.converter.units;
 
 public enum Unit {
 

@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Arrays;
 
+import ru.sberbankmobile.converter.adapters.ConverterAdapter;
+import ru.sberbankmobile.converter.units.Unit;
+
 public class MainActivity extends AppCompatActivity implements OnItemClickListener {
 
     @Override

@@ -1,4 +1,4 @@
-package ru.sberbankmobile.converter;
+package ru.sberbankmobile.converter.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;

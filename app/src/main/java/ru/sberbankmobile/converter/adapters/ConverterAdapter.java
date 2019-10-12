@@ -1,4 +1,4 @@
-package ru.sberbankmobile.converter;
+package ru.sberbankmobile.converter.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import ru.sberbankmobile.converter.OnItemClickListener;
+import ru.sberbankmobile.converter.R;
+import ru.sberbankmobile.converter.units.Unit;
 
 public class ConverterAdapter extends RecyclerView.Adapter<ConverterAdapter.UnitHolder> {
 
@@ -38,7 +42,7 @@ public class ConverterAdapter extends RecyclerView.Adapter<ConverterAdapter.Unit
         return mUnits == null ? 0 : mUnits.size();
     }
 
-    public static class UnitHolder extends RecyclerView.ViewHolder {
+    static class UnitHolder extends RecyclerView.ViewHolder {
         private final TextView mUnitNameView;
         private Unit mUnit;
 

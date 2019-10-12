@@ -16,18 +16,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ru.sberbankmobile.converter.adapters.DimensionSpinnerAdapter;
+import ru.sberbankmobile.converter.providers.DimensionsProvider;
+import ru.sberbankmobile.converter.units.Dimensions;
+import ru.sberbankmobile.converter.units.Unit;
+
 public class ConverterActivity extends AppCompatActivity {
 
     public static final String EXTRA_UNIT = "EXTRA_UNIT";
 
-    private double denominator = 1;
-    private double multiplier = 1;
+    private boolean mHasValueChangedManually = true;
+
+    private double mDenominator = 1;
+    private double mMultiplier = 1;
 
     private Unit mUnit;
     private DimensionsProvider mProvider;
-
-    private Spinner toSpinner;
-    private Spinner fromSpinner;
 
     private List<Dimensions.Dimension> mDimensions = new ArrayList<>();
 
@@ -40,12 +44,13 @@ public class ConverterActivity extends AppCompatActivity {
         setContentView(R.layout.converter_activity);
 
         mProvider = new DimensionsProvider(getResources());
-        setUnitName();
+
+        defineUnitName();
         initEditText();
         initSpinners();
     }
 
-    private void setUnitName() {
+    private void defineUnitName() {
         Intent intent = getIntent();
         mUnit = (Unit) intent.getSerializableExtra(EXTRA_UNIT);
         if (mUnit != null) {
@@ -65,48 +70,18 @@ public class ConverterActivity extends AppCompatActivity {
     private void initSpinners() {
         final List<String> unitDimensions = mProvider.provideDimensions(mUnit);
         final DimensionSpinnerAdapter spinnerAdapter = new DimensionSpinnerAdapter(unitDimensions);
-        fromSpinner = findViewById(R.id.from_spinner);
+        Spinner fromSpinner = findViewById(R.id.from_spinner);
         fromSpinner.setAdapter(spinnerAdapter);
 
-        toSpinner = findViewById(R.id.to_spinner);
+        Spinner toSpinner = findViewById(R.id.to_spinner);
         toSpinner.setAdapter(spinnerAdapter);
 
         fromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Dimensions.Dimension dimension = mDimensions.get(position);
-                if (dimension instanceof Dimensions.Length) {
-                    switch ((Dimensions.Length) dimension) {
-                        case MILLIMETRE:
-                            denominator = 1000;
-                            break;
-                        case CENTIMETRE:
-                            denominator = 100;
-                            break;
-                        case METRE:
-                            denominator = 1;
-                            break;
-                        case KILOMETRE:
-                            denominator = 0.001;
-                            break;
-                    }
-                } else if (dimension instanceof Dimensions.Mass) {
-                    switch ((Dimensions.Mass) dimension) {
-                        case MILLIGRAM:
-                            denominator = 1000000;
-                            break;
-                        case GRAM:
-                            denominator = 1000;
-                            break;
-                        case KILOGRAM:
-                            denominator = 1;
-                            break;
-                        case TON:
-                            denominator = 0.001;
-                            break;
-                    }
-                }
-                convert(mValue.getText());
+                mDenominator = calculateCoefficient(dimension);
+                convert(mValue.getText(), false);
             }
 
             @Override
@@ -119,38 +94,8 @@ public class ConverterActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Dimensions.Dimension dimension = mDimensions.get(position);
-                if (dimension instanceof Dimensions.Length) {
-                    switch ((Dimensions.Length) dimension) {
-                        case MILLIMETRE:
-                            multiplier = 1000;
-                            break;
-                        case CENTIMETRE:
-                            multiplier = 100;
-                            break;
-                        case METRE:
-                            multiplier = 1;
-                            break;
-                        case KILOMETRE:
-                            multiplier = 0.001;
-                            break;
-                    }
-                } else if (dimension instanceof Dimensions.Mass) {
-                    switch ((Dimensions.Mass) dimension) {
-                        case MILLIGRAM:
-                            multiplier = 1000000;
-                            break;
-                        case GRAM:
-                            multiplier = 1000;
-                            break;
-                        case KILOGRAM:
-                            multiplier = 1;
-                            break;
-                        case TON:
-                            multiplier = 0.001;
-                            break;
-                    }
-                }
-                convert(mValue.getText());
+                mMultiplier = calculateCoefficient(dimension);
+                convert(mValue.getText(), false);
             }
 
             @Override
@@ -172,7 +117,10 @@ public class ConverterActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                convert(charSequence);
+                if (mHasValueChangedManually) {
+                    convert(charSequence, false);
+                }
+                mHasValueChangedManually = true;
             }
 
             @Override
@@ -180,63 +128,64 @@ public class ConverterActivity extends AppCompatActivity {
             }
         });
 
-//        mConvertedValue.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                double result = Double.parseDouble(s.toString()) * multiplier / denominator;
-//                mConvertedValue.setText(String.valueOf(result));
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//            }
-//        });
+        mConvertedValue.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (mHasValueChangedManually) {
+                    convert(s, true);
+                }
+                mHasValueChangedManually = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
-    private void defineCoefficient(Dimensions.Dimension dimension) {
+    private double calculateCoefficient(Dimensions.Dimension dimension) {
         if (dimension instanceof Dimensions.Length) {
             switch ((Dimensions.Length) dimension) {
                 case MILLIMETRE:
-                    multiplier = 1000;
-                    break;
+                    return Dimensions.Length.MILLIMETRE.getUnitCoefficient();
                 case CENTIMETRE:
-                    multiplier = 100;
-                    break;
+                    return Dimensions.Length.CENTIMETRE.getUnitCoefficient();
                 case METRE:
-                    multiplier = 1;
-                    break;
+                    return Dimensions.Length.METRE.getUnitCoefficient();
                 case KILOMETRE:
-                    multiplier = 0.001;
-                    break;
+                    return Dimensions.Length.KILOMETRE.getUnitCoefficient();
             }
         } else if (dimension instanceof Dimensions.Mass) {
             switch ((Dimensions.Mass) dimension) {
                 case MILLIGRAM:
-                    multiplier = 1000000;
-                    break;
+                    return Dimensions.Mass.MILLIGRAM.getUnitCoefficient();
                 case GRAM:
-                    multiplier = 1000;
-                    break;
+                    return Dimensions.Mass.GRAM.getUnitCoefficient();
                 case KILOGRAM:
-                    multiplier = 1;
-                    break;
+                    return Dimensions.Mass.KILOGRAM.getUnitCoefficient();
                 case TON:
-                    multiplier = 0.001;
-                    break;
+                    return Dimensions.Mass.TON.getUnitCoefficient();
             }
         }
+        throw new IllegalStateException(getResources().getString(R.string.unsupported_unit) + mUnit);
     }
 
-    private void convert(CharSequence value) {
+    private void convert(CharSequence value, boolean isConvertedValue) {
         if (!value.toString().isEmpty()) {
-            double convertedValue = Double.parseDouble(value.toString()) * multiplier / denominator;
-            mConvertedValue.setText(String.valueOf(convertedValue));
+            double convertedValue = Double.parseDouble(value.toString()) * mMultiplier / mDenominator;
+            if (isConvertedValue) {
+                mHasValueChangedManually = false;
+                mValue.setText(String.valueOf(convertedValue));
+            } else {
+                mHasValueChangedManually = false;
+                mConvertedValue.setText(String.valueOf(convertedValue));
+            }
         }
     }
 }
